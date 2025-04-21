@@ -1,7 +1,6 @@
 .contact {
   display: flex;
   flex-direction: row;
-
   justify-content: space-between;
   border: 1px solid black;
   border-radius: 5px;
@@ -19,3 +18,9 @@
   margin-bottom: -2px;
   margin-right: 5px;
 }
+
+.name {}
+
+.number {}
+
+.deletebtn {}

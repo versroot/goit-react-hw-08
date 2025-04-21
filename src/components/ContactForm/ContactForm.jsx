@@ -1,65 +1,49 @@
-import css from "./ContactForm.module.css";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import { nanoid } from "nanoid";
-import { useDispatch } from "react-redux";
-import { addContact } from "../../redux/contactsOps";
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as yup from 'yup';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact } from '../../redux/contacts/operations';
+import { selectContacts } from '../../redux/contacts/selectors';
+import css from './ContactForm.module.css';
 
-const formSchema = Yup.object({
-  name: Yup.string().min(3).max(50).required("Required"),
-  number: Yup.string().min(3).max(50).required("Required"),
+const schema = yup.object().shape({
+  name: yup.string().required(),
+  number: yup.string().required('Phone is required'),
 });
-
-// export default function ContactForm({ onAddContact }) {
-//   const handleSubmit = (values, actions) => {
-//     const newContact = {
-//
-//       name: values.name,
-//       number: values.number,
-//     };
-//     onAddContact(newContact);
-//     actions.resetForm();
-//   };
 
 export default function ContactForm() {
   const dispatch = useDispatch();
+  const contacts = useSelector(selectContacts);
 
-  const handleSubmit = (values, actions) => {
-    dispatch(
-      addContact({
-        id: nanoid(),
-        name: values.name,
-        number: values.number,
-      })
+  const handleSubmit = (values, { resetForm }) => {
+    const duplicate = contacts.find(
+      c => c.name.toLowerCase() == values.name.toLowerCase()
     );
-    actions.resetForm();
+    if (duplicate) {
+      alert(`${values.name} is already in contacts`);
+      return;
+    }
+    dispatch(addContact(values));
+    resetForm();
   };
 
   return (
     <Formik
-      initialValues={{ name: "", number: "" }}
+      initialValues={{ name: '', number: '' }}
+      validationSchema={schema}
       onSubmit={handleSubmit}
-      validationSchema={formSchema}
     >
       <Form className={css.cform}>
         <div className={css.group}>
-          <label>Name </label>
-          <Field type="text" name="name" />
-          <ErrorMessage name="name" component="div" style={{ color: "red" }} />
+          <label>Name</label>
+          <Field name='name' placeholder='Name' />
+          <ErrorMessage name='name' component='div' style={{ color: 'red' }} />
         </div>
         <div className={css.group}>
-          <label>Number </label>
-          <Field type="tel" name="number" />
-          <ErrorMessage
-            name="number"
-            component="div"
-            style={{ color: "red" }}
-          />
+          <label>Number</label>
+          <Field name='number' placeholder='Number' />
+          <ErrorMessage name='number' component='div' style={{ color: 'red' }} />
         </div>
-
-        <button className={css.group} type="submit">
-          Add contact
-        </button>
+        <button type='submit'>Add contact</button>
       </Form>
     </Formik>
   );
