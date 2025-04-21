@@ -1,10 +1,14 @@
-import { useSelector, useDispatch } from 'react-redux';
-import { useEffect } from 'react';
-import { fetchContacts } from '../../redux/contacts/operations';
-import { selectContacts, selectContactsLoading, selectContactsError } from '../../redux/contacts/selectors';
-import { selectFilter } from '../../redux/filters/selectors';
-import styles from './ContactList.module.css';
-import Contact from '../Contact/Contact';
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { fetchContacts } from "../../redux/contacts/operations";
+import {
+  selectContacts,
+  selectContactsLoading,
+  selectContactsError,
+} from "../../redux/contacts/selectors";
+import { selectFilter } from "../../redux/filters/selectors";
+import styles from "./ContactList.module.css";
+import Contact from "../Contact/Contact";
 
 export default function ContactList() {
   const dispatch = useDispatch();
@@ -17,14 +21,17 @@ export default function ContactList() {
     dispatch(fetchContacts());
   }, [dispatch]);
 
-  const visible = contacts.filter(c => c.name.toLowerCase().includes(filter));
+  const visible = contacts.filter((c) => c.name.toLowerCase().includes(filter));
 
   return (
     <>
       {isLoading && <p>Loading...</p>}
-      {error && <p>Error: {error}</p>}
+      {error && (
+        <p>+ Error: {typeof error === "string" ? error : error.message}+ </p>
+      )}
+
       <ul className={styles.list}>
-        {visible.map(c => (
+        {visible.map((c) => (
           <Contact key={c.id} contact={c} />
         ))}
       </ul>
