@@ -8,38 +8,38 @@ import {
   selectContactsError,
 } from "../../redux/contacts/selectors";
 import { selectFilter } from "../../redux/filters/selectors";
-import { selectToken } from "../../redux/auth/selectors";
+import {
+  selectIsLoggedIn,
+  selectIsRefreshing,
+} from "../../redux/auth/selectors";
 import css from "./ContactList.module.css";
 import Contact from "../Contact/Contact";
 
 export default function ContactList() {
   const dispatch = useDispatch();
-
-  // grab token directly
-  const token = useSelector(selectToken);
-  // contacts state
   const contacts = useSelector(selectContacts) || [];
   const isLoading = useSelector(selectContactsLoading);
   const error = useSelector(selectContactsError);
   const filter = useSelector(selectFilter).toLowerCase();
 
-  // only fetch once we have a token
+  // These two tell us exactly where we are in auth flow:
+  const isRefreshing = useSelector(selectIsRefreshing);
+  const isLoggedIn = useSelector(selectIsLoggedIn);
+
+  // Only fetch once refreshing is done AND user is logged in
   useEffect(() => {
-    if (token) {
+    if (!isRefreshing && isLoggedIn) {
       dispatch(fetchContacts());
     }
-  }, [dispatch, token]);
+  }, [dispatch, isRefreshing, isLoggedIn]);
 
-  // filter out by name
+  // Silently ignore errors on first load (401 before token)
+  // Optional: you could show a retry button if you want.
   const visible = contacts.filter((c) => c.name.toLowerCase().includes(filter));
 
   return (
     <>
-      {isLoading && <p>Loading contacts…</p>}
-
-      {/* no raw error rendering */}
-      {error && <p style={{ color: "red" }}>Error fetching contacts.</p>}
-
+      {isLoading && <p>Loading...</p>}
       <ul className={css.list}>
         {visible.map((c) => (
           <Contact key={c.id} contact={c} />
