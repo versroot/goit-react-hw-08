@@ -26,9 +26,7 @@ export default function ContactList() {
   return (
     <>
       {isLoading && <p>Loading...</p>}
-      {error && (
-        <p>+ Error: {typeof error === "string" ? error : error.message}+ </p>
-      )}
+      {error && <p>Error: {error}</p>}
 
       <ul className={styles.list}>
         {visible.map((c) => (
