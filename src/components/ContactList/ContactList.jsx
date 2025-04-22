@@ -12,12 +12,13 @@ import {
 } from "../../redux/auth/selectors";
 import css from "./ContactList.module.css";
 import Contact from "../Contact/Contact";
+import { selectFilteredContacts } from "../../redux/contacts/selectors";
 
 export default function ContactList() {
   const dispatch = useDispatch();
-  const contacts = useSelector(selectContacts) || [];
+  // const contacts = useSelector(selectContacts) || [];
   const isLoading = useSelector(selectContactsLoading);
-  const filter = useSelector(selectFilter).toLowerCase();
+  // const filter = useSelector(selectFilter).toLowerCase();
 
   const isRefreshing = useSelector(selectIsRefreshing);
   const isLoggedIn = useSelector(selectIsLoggedIn);
@@ -28,8 +29,8 @@ export default function ContactList() {
     }
   }, [dispatch, isRefreshing, isLoggedIn]);
 
-  const visible = contacts.filter((c) => c.name.toLowerCase().includes(filter));
-
+  // const visible = contacts.filter((c) => c.name.toLowerCase().includes(filter));
+  const visible = useSelector(selectFilteredContacts);
   return (
     <>
       {isLoading && <p>Loading...</p>}
